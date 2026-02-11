@@ -4,19 +4,22 @@ products_dict = {
 }
 
 
+def print_product(key, value):
+    total = value[0] * value[1]
+    print(f"{key.capitalize()} — цена: {value[0]}, количество: {value[1]}, общая стоимость: {total}")
+
+
 def show_products(products):
     for key, value in sorted(products.items()):
-        total_cost_key = value[0] * value[1]
-        print(f"{key.capitalize()} - цена: {value[0]}, количество: {value[1]}, общая стоимость: {total_cost_key}")
+        print_product(key, value)
     print("")
 
 
 def input_validation(number):
     try:
-        int(number)
+        return int(number)
     except ValueError:
         return None
-    return int(number)
 
 
 def add_product(products):
@@ -44,19 +47,20 @@ def update_quantity(products):
         else:
             tmp = list(products[key])
             tmp[1] += value_1
-            products[key] = tuple(tmp)
-            print("Сохранено.\n")
+            if tmp[1] >= 0:
+                products[key] = tuple(tmp)
+                print("Сохранено.\n")
+            else:
+                print("Нельзя уменьшить количество ниже 0.\n")
 
 
 def delete_product(products):
-    _key = input("Введите название товара для удаления: ").lower().strip()
-    if _key not in products:
+    key = input("Введите название товара для удаления: ").lower().strip()
+    if key not in products:
         print("Такого товара нет. Попробуйте еще раз.\n")
     else:
-        for key in list(products.keys()):
-            if key == _key:
-                products.pop(_key)
-    print(f'Товар - "{_key.capitalize()}" удален.\n')
+        products.pop(key)
+        print(f'Товар - "{key.capitalize()}" удален.\n')
     return products
 
 
@@ -79,26 +83,18 @@ def sorted_product(products):
     elif choice == "1":
         sorted_total_cost = sorted(
             products.keys(),
-            key=lambda k: products[k][0],
+            key=lambda k: products[k][0] * products[k][1],
             reverse=True)
         for total_cost in sorted_total_cost:
-            total_cost_key = products[total_cost][0] * products[total_cost][1]
-            print(
-                f"{total_cost.capitalize()} - цена: {products[total_cost][0]},"
-                f"количество: {products[total_cost][1]},"
-                f"общая стоимость: {total_cost_key}")
+            print_product(total_cost, products[total_cost])
         print("")
     elif choice == "2":
         sorted_total_cost = sorted(
             products.keys(),
-            key=lambda k: products[k][0] * products[k][1],
+            key=lambda k: products[k][0],
             reverse=True)
         for total_cost in sorted_total_cost:
-            total_cost_key = products[total_cost][0] * products[total_cost][1]
-            print(
-                f"{total_cost.capitalize()} - цена: {products[total_cost][0]}, "
-                f"количество: {products[total_cost][1]}, "
-                f"общая стоимость: {total_cost_key}")
+            print_product(total_cost, products[total_cost])
         print("")
     elif choice == "3":
         sorted_total_cost = sorted(
@@ -106,11 +102,7 @@ def sorted_product(products):
             key=lambda k: products[k][1],
             reverse=True)
         for total_cost in sorted_total_cost:
-            total_cost_key = products[total_cost][0] * products[total_cost][1]
-            print(
-                f"{total_cost.capitalize()} - цена: {products[total_cost][0]}, "
-                f"количество: {products[total_cost][1]}, "
-                f"общая стоимость: {total_cost_key}")
+            print_product(total_cost, products[total_cost])
         print("")
     else:
         print("Ошибка. Такого действия нет, введите повторно.\n")
@@ -143,8 +135,10 @@ def main(products):
                                    "Выберите действие (0 - нет, 1 - да): ").strip()
                     if choice == "0":
                         break
-                    else:
+                    elif choice == "1":
                         sorted_product(products)
+                    else:
+                        print("Ошибка. Такого действия нет, введите повторно.\n")
             else:
                 print("Склад пуст.\n")
         elif choice == "2":
